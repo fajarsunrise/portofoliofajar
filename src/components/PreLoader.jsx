@@ -1,63 +1,71 @@
-import Aurora from "./Aurora/Aurora"
-import { useState, useEffect } from "react"
-import CountUp from "./CountUp/CountUp"
+import Aurora from "./Aurora/Aurora";
+import CountUp from "./CountUp/CountUp";
+import { useEffect, useState } from "react";
 
 const PreLoader = () => {
-  const [loading, setLoading] = useState(true)
-  const [countDone, setCountDone] = useState(false)
-  const [fadeText, setFadeText] = useState(false)
-  const [fadeScreen, setFadeScreen] = useState(false)
+  const [loading, setLoading] = useState(true);
+  const [countDone, setCountDone] = useState(false);
+  const [fadeText, setFadeText] = useState(false);
+  const [fadeScreen, setFadeScreen] = useState(false);
 
   useEffect(() => {
-    if (countDone) {
-      // Fade teks
-      const fadeTextTimer = setTimeout(() => setFadeText(true), 3000)
+    if (!countDone) return;
 
-      // Fade seluruh screen
-      const fadeScreenTimer = setTimeout(() => setFadeScreen(true), 2000)
+    // Teks mulai menghilang
+    const fadeTextTimer = setTimeout(() => {
+      setFadeText(true);
+    }, 500);
 
-      // Unmount preloader setelah animasi fade selesai
-      const hideTimer = setTimeout(() => setLoading(false), 3000)
+    // Seluruh layar mulai menghilang
+    const fadeScreenTimer = setTimeout(() => {
+      setFadeScreen(true);
+    }, 1500);
 
-      return () => {
-        clearTimeout(fadeTextTimer)
-        clearTimeout(fadeScreenTimer)
-        clearTimeout(hideTimer)
-      }
-    }
-  }, [countDone])
+    // Hapus preloader
+    const hideTimer = setTimeout(() => {
+      setLoading(false);
+    }, 2600);
+
+    return () => {
+      clearTimeout(fadeTextTimer);
+      clearTimeout(fadeScreenTimer);
+      clearTimeout(hideTimer);
+    };
+  }, [countDone]);
+
+  if (!loading) return null;
 
   return (
     loading && (
       <div
-        className={`w-screen h-screen fixed flex items-center justify-center bg-black z-[10000] overflow-hidden transition-opacity duration-1000 ${
-          fadeScreen ? "opacity-0" : "opacity-100"
-        }`}
+        className={`fixed inset-0 bg-black z-[10000] overflow-hidden transition-opacity duration-1000 ${fadeScreen ? "opacity-0" : "opacity-100"
+          }`}
       >
         <Aurora
           colorStops={["#577870", "#1F97A6", "#127B99"]}
           blend={0.5}
-          amplitude={1.0}
+          amplitude={1}
           speed={0.5}
         />
+
         <div
-          className={`absolute text-white text-6xl font-bold transition-all duration-1000 ${
-            fadeText ? "opacity-0 -translate-y-10" : "opacity-100 translate-y-0"
-          }`}
+          className={`absolute inset-0 z-50 flex items-center justify-center transition-all duration-1000 ${fadeText
+            ? "opacity-0 -translate-y-10"
+            : "opacity-100 translate-y-0"
+            }`}
         >
-          <CountUp
-            from={0}
-            to={100}
-            separator=","
-            direction="up"
-            duration={1}
-            className="count-up-text"
-            onEnd={() => setCountDone(true)}
-          />
+          <div className="text-white text-8xl font-bold text-center">
+            <CountUp
+              from={0}
+              to={100}
+              duration={2}
+              onEnd={() => setCountDone(true)}
+            />
+          </div>
         </div>
       </div>
     )
-  )
-}
+  );;
+};
 
-export default PreLoader
+export default PreLoader;

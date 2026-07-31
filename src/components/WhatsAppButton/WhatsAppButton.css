@@ -1,0 +1,79 @@
+.wa-fixed-container {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wa-button {
+  position: relative;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: #128c7e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 15px rgba(37, 211, 102, 0.4), 
+              0 0 30px rgba(37, 211, 102, 0.2);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              box-shadow 0.3s ease;
+  overflow: visible;
+}
+
+/* Liquid/Gooey animation wrapper */
+.wa-liquid-bg {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25d366, #128c7e, #075e54);
+  z-index: -1;
+  filter: url('#wa-liquid-goo');
+  opacity: 0.85;
+  animation: wa-liquid-rotate 6s linear infinite;
+  transition: transform 0.3s ease;
+}
+
+.wa-button:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 25px rgba(37, 211, 102, 0.7), 
+              0 0 50px rgba(37, 211, 102, 0.4);
+}
+
+.wa-button:hover .wa-liquid-bg {
+  transform: scale(1.08);
+}
+
+@keyframes wa-liquid-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tooltip styling */
+.wa-tooltip {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  background: rgba(9, 9, 11, 0.95);
+  border: 1px solid rgba(37, 211, 102, 0.3);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 8px rgba(37, 211, 102, 0.2);
+}

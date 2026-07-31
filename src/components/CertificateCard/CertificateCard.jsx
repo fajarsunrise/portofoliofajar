@@ -1,33 +1,104 @@
 // src/components/CertificateCard/CertificateCard.jsx
-import React from 'react';
+
+import { useRef, useCallback } from "react";
+import "./CertificateCard.css";
 
 const CertificateCard = ({ cert, onClick }) => {
-    return (
-        <div
-            onClick={() => onClick(cert)}
-            className="relative p-[2px] rounded-2xl bg-gradient-to-r from-emerald-400 via-blue-500 to-indigo-500 transition-transform duration-300 hover:scale-105 cursor-pointer"
-        >
-            <div className="bg-[#121212] rounded-2xl p-4 h-full flex flex-col">
-                {/* Area Gambar */}
-                <div className="w-full h-48 bg-gray-800 rounded-xl mb-4 overflow-hidden">
-                    <img
-                        src={cert.image}
-                        alt={cert.title}
-                        className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
-                    />
-                </div>
+  const cardRef = useRef(null);
 
-                {/* Area Teks */}
-                <h3 className="text-white text-lg font-bold mb-1">{cert.title}</h3>
-                <p className="text-emerald-400 text-xs font-semibold mb-2">
-                    {cert.issuer} • {cert.date}
-                </p>
-                <p className="text-gray-400 text-sm line-clamp-2">
-                    {cert.description}
-                </p>
-            </div>
+  // Jika data certificate belum ada
+  if (!cert) return null;
+
+  const handleMouseMove = useCallback((e) => {
+    requestAnimationFrame(() => {
+      if (!cardRef.current) return;
+
+      const rect = cardRef.current.getBoundingClientRect();
+
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+      cardRef.current.style.setProperty("--glow-x", `${x}%`);
+      cardRef.current.style.setProperty("--glow-y", `${y}%`);
+    });
+  }, []);
+
+  const handleCardClick = () => {
+    onClick?.(cert);
+  };
+
+  const handlePreviewClick = (e) => {
+    e.stopPropagation();
+    onClick?.(cert);
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      className="magic-bento-card"
+      onMouseMove={handleMouseMove}
+      onClick={handleCardClick}
+    >
+      <div className="magic-bento-inner">
+        {/* Thumbnail */}
+
+        <div className="magic-bento-image">
+          <img
+            src={cert.image}
+            alt={cert.title}
+            loading="lazy"
+            draggable={false}
+          />
         </div>
-    );
+
+        {/* Content */}
+
+        <div className="magic-bento-content">
+          <h3 className="magic-bento-title">
+            {cert.title || "Untitled Certificate"}
+          </h3>
+
+          <div className="magic-bento-meta">
+            <span className="year">{cert.date || "-"}</span>
+
+            <span className="dot">•</span>
+
+            <span className="issuer">
+              {cert.issuer || "Unknown issuer"}
+            </span>
+          </div>
+
+          {/* Preview Button */}
+
+          <div className="magic-bento-preview">
+            <button
+              type="button"
+              className="magic-bento-preview-btn"
+              onClick={handlePreviewClick}
+            >
+              <span>Preview Certificate</span>
+
+              <svg
+                width="18"
+                height="18"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14" />
+
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CertificateCard;

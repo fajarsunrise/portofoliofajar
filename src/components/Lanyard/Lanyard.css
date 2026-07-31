@@ -1,7 +1,7 @@
 .lanyard-wrapper {
   position: relative;
   z-index: 0;
-  width: 200vh;
+  width: 100%;
   height: 70vh;
   display: flex;
   justify-content: center;

@@ -1,49 +1,106 @@
 import "remixicon/fonts/remixicon.css";
-import Dock from "./Dock/Dock";
-import { VscHome, VscArchive, VscAccount } from "react-icons/vsc";
+
+import AppleDock from "./AppleDock/AppleDock";
+import WhatsAppButton from "./WhatsAppButton/WhatsAppButton";
+import TextPressure from "./TextPressure/TextPressure";
+
+import {
+  RiGithubLine,
+  RiInstagramLine,
+  RiLinkedinLine,
+  RiWhatsappLine,
+  RiMailLine,
+} from "react-icons/ri";
 
 const Footer = () => {
-  const items = [
-    { icon: <VscHome size={18} />, label: "Home", onClick: () => document.getElementById("home")?.scrollIntoView({ behavior: "smooth" }) },
-    { icon: <VscAccount size={18} />, label: "About Me", onClick: () => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" }) },
-    { icon: <VscArchive size={18} />, label: "Project", onClick: () => document.getElementById("project")?.scrollIntoView({ behavior: "smooth" }) },
+  const socialItems = [
+    {
+      icon: <RiGithubLine size={22} />,
+      label: "GitHub",
+      onClick: () =>
+        window.open("https://github.com/Irsyad-ald", "_blank"),
+    },
+    {
+      icon: <RiInstagramLine size={22} />,
+      label: "Instagram",
+      onClick: () =>
+        window.open("https://instagram.com/irsyad_ald", "_blank"),
+    },
+    {
+      icon: <RiLinkedinLine size={22} />,
+      label: "LinkedIn",
+      onClick: () =>
+        window.open("https://linkedin.com/in/irsyad_ald", "_blank"),
+    },
+    {
+      icon: <RiWhatsappLine size={22} />,
+      label: "WhatsApp",
+      onClick: () =>
+        window.open("https://wa.me/6287767132263", "_blank"),
+    },
+    {
+      icon: <RiMailLine size={22} />,
+      label: "Email",
+      onClick: () =>
+        window.open("irald0357@gmail.com", "_blank"),
+    },
   ];
 
   return (
-    <div className="mt-32 pb-8 flex flex-col items-center relative z-10">
-      {/* Flex container adaptif */}
-      <div className="w-full flex flex-col md:flex-row items-center md:justify-between gap-6">
+    <>
+      <footer className="relative w-full h-[750px] overflow-hidden mt-32">
 
-        {/* Judul - paling atas di mobile */}
-        <h1 className="text-2xl font-bold order-1 md:order-none">
-          Portofolio
-        </h1>
+        {/* PORTOFOLIO */}
 
-        {/* Ikon Sosmed - di tengah di mobile */}
-        <div className="flex gap-3 order-2 md:order-none">
-          <a href="https://github.com/Irsyad_ald" className="hover:opacity-75 transition-opacity duration-300">
-            <i className="ri-github-fill ri-2x"></i>
-          </a>
-          <a href="https://www.instagram.com/irsyad_ald/" className="hover:opacity-75 transition-opacity duration-300">
-            <i className="ri-instagram-fill ri-2x"></i>
-          </a>
-          <a href="https://www.youtube.com/@irsyad_ald" className="hover:opacity-75 transition-opacity duration-300">
-            <i className="ri-youtube-fill ri-2x"></i>
-          </a>
-        </div>
-
-        {/* Dock - paling bawah di mobile */}
-        <div className="order-3 md:order-none mt-15 md:mt-0  md:mb-0">
-          <Dock
-            items={items}
-            panelHeight={30}
-            baseItemSize={60}
-            magnification={100}
+        <div className="absolute bottom-[220px] left-1/2 -translate-x-1/2 w-full h-[250px] z-10">
+          <TextPressure
+            text="Portofolio"
+            flex={true}
+            scale={false}
+            alpha={false}
+            stroke={false}
+            width={true}
+            weight={true}
+            italic={false}
+            textColor="rgba(87, 87, 87, 1)"
+            strokeColor="#ffffff"
+            minFontSize={220}
           />
         </div>
 
-      </div>
-    </div>
+        {/* Apple Dock */}
+
+        <div className="absolute bottom-[110px] left-1/2 -translate-x-1/2 z-20">
+          <AppleDock items={socialItems} />
+        </div>
+
+        {/* WhatsApp */}
+
+        <div className="absolute right-8 bottom-8 z-30">
+          <WhatsAppButton />
+        </div>
+      </footer>
+
+      <style>{`
+        @media (max-width: 1024px) {
+          footer {
+            height: 650px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          footer {
+            height: 550px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          footer {
+            height: 500px;
+          }
+        }
+      `}</style>
+    </>
   );
 };
 

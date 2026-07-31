@@ -11,6 +11,10 @@ import ChromaGrid from "./components/ChromaGrid/ChromaGrid";
 import ProjectModal from "./components/ProjectModal/ProjectModal";
 import CertificateCard from "./components/CertificateCard/CertificateCard";
 import CertificateModal from "./components/CertificateModal/CertificateModal";
+import CountUp from "./components/CountUp/CountUp";
+import ScrollReveal from "./components/ScrollReveal/ScrollReveal";
+import ScrollTicker from "./components/ScrollTicker/ScrollTicker";
+import InteractiveTicker from "./components/InteractiveTicker/InteractiveTicker";
 
 import Aurora from "./components/Aurora/Aurora";
 import AOS from 'aos';
@@ -129,6 +133,9 @@ function App() {
           </div>
         </div>
 
+        {/* Scroll Ticker — between Hero and About */}
+        <ScrollTicker />
+
         {/* Tentang (About Me) */}
         <div className="mt-15 mx-auto w-full max-w-[1600px] rounded-3xl border-[5px] border-violet-500/40 shadow-[0_0_30px_rgba(168,85,247,0.4)] bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#1a1a1a] p-6" id="about">
           <div className="flex flex-col md:flex-row items-center justify-between gap-10 pt-0 px-8" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
@@ -138,30 +145,57 @@ function App() {
                   About Me
                 </h1>
 
-                <BlurText
-                  text="I’m Ahmad Irsyad Alaudin, a full-stack developer passionate about building modern, high-performance applications with an intuitive user experience. I enjoy working with the latest technologies like Artificial Intelligence, Machine Learning, and cloud-based development, blending creativity with precision to deliver impactful solutions. With over three years of experience and more than 20 completed projects, I’m committed to helping users and businesses grow in the digital era through functional, aesthetic, and scalable digital products."
-                  delay={150}
-                  animateBy="words"
-                  direction="top"
-                  className="text-base md:text-lg leading-relaxed mb-10 text-gray-300"
-                />
+                {/* ScrollReveal text — reveals word-by-word on scroll */}
+                <div className="mb-10">
+                  <ScrollReveal
+                    baseOpacity={0.15}
+                    enableBlur={true}
+                    baseRotation={0}
+                    blurStrength={3}
+                    containerClassName="scroll-reveal-body"
+                    textClassName=""
+                    rotationEnd="bottom bottom"
+                    wordAnimationEnd="center center"
+                  >
+                    I'm Ahmad Irsyad Alaudin, a full-stack developer passionate about building modern, high-performance applications with an intuitive user experience. I enjoy working with the latest technologies like Artificial Intelligence, Machine Learning, and cloud-based development, blending creativity with precision to deliver impactful solutions. With over three years of experience and more than 20 completed projects, I'm committed to helping users and businesses grow in the digital era through functional, aesthetic, and scalable digital products.
+                  </ScrollReveal>
+                </div>
 
-                <div className="flex flex-col sm:flex-row items-center sm:justify-between text-center sm:text-left gap-y-8 sm:gap-y-0 mb-4 w-full">
+                {/* Counter Animation Stats */}
+                <div ref={aboutRef} className="flex flex-col sm:flex-row items-center sm:justify-between text-center sm:text-left gap-y-8 sm:gap-y-0 mb-4 w-full">
                   <div>
                     <h1 className="text-3xl md:text-4xl mb-1">
-                      20<span className="text-violet-500">+</span>
+                      <CountUp
+                        from={0}
+                        to={20}
+                        duration={2}
+                        className="font-bold"
+                      />
+                      <span className="text-violet-500">+</span>
                     </h1>
                     <p>Project Finished</p>
                   </div>
                   <div>
                     <h1 className="text-3xl md:text-4xl mb-1">
-                      3<span className="text-violet-500">+</span>
+                      <CountUp
+                        from={0}
+                        to={3}
+                        duration={2}
+                        className="font-bold"
+                      />
+                      <span className="text-violet-500">+</span>
                     </h1>
                     <p>Years of Experience</p>
                   </div>
-                  <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="600" data-aos-once="true">
+                  <div>
                     <h1 className="text-3xl md:text-4xl mb-1">
-                      3.81<span className="text-violet-500">/4.00</span>
+                      <CountUp
+                        from={0}
+                        to={3.81}
+                        duration={2.5}
+                        className="font-bold"
+                      />
+                      <span className="text-violet-500">/4.00</span>
                     </h1>
                     <p>GPA</p>
                   </div>
@@ -182,7 +216,7 @@ function App() {
           </div>
         </div>
 
-        {/* Tools & Technologies */}
+        {/* Tools & Technologies — Interactive Ticker */}
         <div className="tools mt-32">
           <h1
             className="text-4xl md:text-5xl mb-3 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-emerald-400 text-center"
@@ -193,31 +227,8 @@ function App() {
             Tools & Technologies
           </h1>
           <p className="text-base/loose text-center opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">My Professional Skills</p>
-          <div className="tools-box mt-14 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
-
-            {listTools.map((tool) => (
-              <div
-                key={tool.id} data-aos="fade-up" data-aos-duration="1000" data-aos-delay={tool.dad} data-aos-once="true"
-                className="flex items-center gap-4 p-4 border border-zinc-700 rounded-xl bg-zinc-900/60 backdrop-blur-md hover:bg-zinc-800/80 transition-all duration-300 group shadow-lg"
-              >
-                <img
-                  src={tool.gambar}
-                  alt="Tools Image"
-                  className="w-16 h-16 object-contain bg-zinc-800 p-2 rounded-lg group-hover:bg-zinc-900 transition-all duration-300"
-                />
-                <div className="flex flex-col overflow-hidden">
-                  <div className="truncate">
-                    <ShinyText
-                      text={tool.nama}
-                      disabled={false}
-                      speed={3}
-                      className="text-lg font-semibold block"
-                    />
-                  </div>
-                  <p className="text-sm text-zinc-400 truncate">{tool.ket}</p>
-                </div>
-              </div>
-            ))}
+          <div className="mt-14" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400" data-aos-once="true">
+            <InteractiveTicker tools={listTools} />
           </div>
         </div>
 
@@ -243,7 +254,7 @@ function App() {
           </div>
         </div>
 
-        {/* Certificates */}
+        {/* Certificates — Magic Bento Grid */}
         <div className="sertifikat mt-32 py-10" id="certificates" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
           <h1
             className="text-4xl md:text-5xl mb-3 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-emerald-400 text-center"
@@ -255,7 +266,7 @@ function App() {
           </h1>
           <p className="text-base/loose text-center opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">Showcasing my academic achievements, training completions, and skill validations.</p>
         </div>
-        <div className="sertifikat-box mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400" data-aos-once="true">
+        <div className="sertifikat-box mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-10" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400" data-aos-once="true">
           {listSertifikat.map((cert) => (
             <CertificateCard
               key={cert.id}
@@ -310,7 +321,9 @@ function App() {
                 data-aos-delay="500"
                 data-aos-once="true"
               >
-                <h3 className="text-lg font-bold text-white mb-6">Send Message</h3>
+                <h1 className="text-lg font-bold text-white mb-6 text-center">
+                  Send Message
+                </h1>
 
                 <div className="flex flex-col gap-6 flex-grow">
                   <div className="flex flex-col gap-2 relative">
@@ -349,11 +362,16 @@ function App() {
 
                   <button
                     type="submit"
-                    className="relative w-full overflow-hidden rounded-xl p-[1px] cursor-pointer group"
+                    className="relative w-full overflow-hidden rounded-xl p-[1px] cursor-pointer group flex justify-center"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-violet-500 via-emerald-500 to-violet-500 opacity-70 group-hover:opacity-100 transition-opacity duration-500"></span>
                     <div className="relative flex items-center justify-center bg-zinc-950 w-full h-full px-6 py-4 rounded-xl group-hover:bg-zinc-900 transition-colors">
-                      <ShinyText text="Send Message" disabled={false} speed={3} className="font-bold tracking-wide text-white" />
+                      <ShinyText
+                        text="Send Message"
+                        disabled={false}
+                        speed={3}
+                        className="font-bold tracking-wide text-white text-center"
+                      />
                     </div>
                   </button>
                 </div>

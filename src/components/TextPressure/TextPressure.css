@@ -1,0 +1,55 @@
+.text-pressure-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+}
+
+.text-pressure-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  transition: opacity 0.3s ease;
+}
+
+.text-pressure-text.flex-mode {
+  justify-content: space-between;
+}
+
+.text-pressure-char {
+  display: inline-block;
+  will-change: font-variation-settings, opacity, transform;
+  transition: font-variation-settings 0.15s ease-out,
+              opacity 0.15s ease-out,
+              transform 0.15s ease-out;
+  line-height: 1;
+}
+
+.text-pressure-char.italic-mode {
+  font-style: italic;
+}
+
+.text-pressure-char.stroke-mode {
+  -webkit-text-stroke: 2px currentColor;
+  color: transparent !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+}
+
+.text-pressure-container.active .text-pressure-char.alpha-mode {
+  opacity: 0.3;
+}
+
+.text-pressure-container.active .text-pressure-char.alpha-mode.near {
+  opacity: 1;
+}

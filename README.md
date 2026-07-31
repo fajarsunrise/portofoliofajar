@@ -28,3 +28,8 @@ Hai, saya Irsyad. Seorang pengembang yang berfokus pada integrasi teknologi web 
 🐙 GitHub: @Irsyad-ald
 
 📸 Preview
+
+
+git add .
+git commit -m "Fix hex color parser crash in App.jsx"
+git push origin main
