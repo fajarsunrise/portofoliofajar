@@ -1,6 +1,6 @@
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
-
+import { isReducedMotion } from '../../utils/performance';
 import './Aurora.css';
 
 const VERT = `#version 300 es
@@ -11,7 +11,7 @@ void main() {
 `;
 
 const FRAG = `#version 300 es
-precision highp float;
+precision mediump float;
 
 uniform float uTime;
 uniform float uAmplitude;
@@ -120,10 +120,13 @@ export default function Aurora(props) {
     const ctn = ctnDom.current;
     if (!ctn) return;
 
+    // Cap DPR to 1.25 to prevent massive 4K WebGL texture overhead
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
     const renderer = new Renderer({
       alpha: true,
       premultipliedAlpha: true,
-      antialias: true
+      antialias: false,
+      dpr: dpr
     });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
@@ -136,13 +139,14 @@ export default function Aurora(props) {
     function resize() {
       if (!ctn) return;
       const width = ctn.offsetWidth;
-      const height = ctn.offsetHeight;
+      // Cap height to max 900px to prevent viewport-scale texture explosion
+      const height = Math.min(ctn.offsetHeight, 900);
       renderer.setSize(width, height);
       if (program) {
-        program.uniforms.uResolution.value = [width, height];
+        program.uniforms.uResolution.value = [width * dpr, height * dpr];
       }
     }
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
 
     const geometry = new Triangle(gl);
     if (geometry.attributes.uv) {
@@ -154,6 +158,9 @@ export default function Aurora(props) {
       return [c.r, c.g, c.b];
     });
 
+    const initW = ctn.offsetWidth || window.innerWidth;
+    const initH = Math.min(ctn.offsetHeight || window.innerHeight, 900);
+
     program = new Program(gl, {
       vertex: VERT,
       fragment: FRAG,
@@ -161,7 +168,7 @@ export default function Aurora(props) {
         uTime: { value: 0 },
         uAmplitude: { value: amplitude },
         uColorStops: { value: colorStopsArray },
-        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
+        uResolution: { value: [initW * dpr, initH * dpr] },
         uBlend: { value: blend }
       }
     });
@@ -170,9 +177,12 @@ export default function Aurora(props) {
     ctn.appendChild(gl.canvas);
 
     let animateId = 0;
+    let isVisible = true;
+    const reduced = isReducedMotion();
+
     const update = t => {
-      animateId = requestAnimationFrame(update);
-      const { time = t * 0.01, speed = 1.0 } = propsRef.current;
+      if (!isVisible) return;
+      const { time = t * 0.01, speed = 0.5 } = propsRef.current;
       program.uniforms.uTime.value = time * speed * 0.1;
       program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
       program.uniforms.uBlend.value = propsRef.current.blend ?? blend;
@@ -182,12 +192,36 @@ export default function Aurora(props) {
         return [c.r, c.g, c.b];
       });
       renderer.render({ scene: mesh });
+
+      if (!reduced) {
+        animateId = requestAnimationFrame(update);
+      }
     };
+
+    // Pause WebGL rendering entirely when off-screen to save 100% GPU
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const currentlyVisible = entry.isIntersecting;
+        if (currentlyVisible && !isVisible) {
+          isVisible = true;
+          if (!reduced) {
+            animateId = requestAnimationFrame(update);
+          }
+        } else if (!currentlyVisible && isVisible) {
+          isVisible = false;
+          cancelAnimationFrame(animateId);
+        }
+      },
+      { threshold: 0.01 }
+    );
+    observer.observe(ctn);
+
+    // Initial render
+    resize();
     animateId = requestAnimationFrame(update);
 
-    resize();
-
     return () => {
+      observer.disconnect();
       cancelAnimationFrame(animateId);
       window.removeEventListener('resize', resize);
       if (ctn && gl.canvas.parentNode === ctn) {

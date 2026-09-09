@@ -1,5 +1,7 @@
 .scroll-ticker-wrapper {
   position: relative;
+  width: 100%;
+  max-width: 100%;
   overflow: hidden;
   padding: 2rem 0;
   mask-image: linear-gradient(
@@ -23,6 +25,8 @@
   width: max-content;
   animation: ticker-scroll 25s linear infinite;
   gap: 1rem;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .scroll-ticker-track:hover {
@@ -31,10 +35,10 @@
 
 @keyframes ticker-scroll {
   0% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -48,9 +52,8 @@
   color: rgba(244, 244, 245, 0.7);
   padding: 0.5rem 1.25rem;
   border-radius: 9999px;
-  border: 1px solid rgba(139, 92, 246, 0.15);
-  background: rgba(24, 24, 27, 0.5);
-  backdrop-filter: blur(8px);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: #18181b;
   transition: all 0.3s ease;
 }
 

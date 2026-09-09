@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useState } from "react";
 import ProfileCard from "./components/ProfileCard/ProfileCard";
 import ShinyText from "./components/ShinyText/ShinyText";
 import BlurText from "./components/BlurText/BlurText";
@@ -7,27 +7,24 @@ import SplitText from "./components/SplitText/SplitText";
 import Lanyard from "./components/Lanyard/Lanyard";
 import GlassIcons from "./components/GlassIcons/GlassIcons";
 import { listTools, listProyek, listSertifikat } from "./data";
-import ChromaGrid from "./components/ChromaGrid/ChromaGrid";
+import ScrollStack, { ScrollStackItem } from "./components/ScrollStack/ScrollStack";
+import ProjectStackCard from "./components/ScrollStack/ProjectStackCard";
 import ProjectModal from "./components/ProjectModal/ProjectModal";
 import CertificateCard from "./components/CertificateCard/CertificateCard";
 import CertificateModal from "./components/CertificateModal/CertificateModal";
+import ChromaGrid from "./components/ChromaGrid/ChromaGrid";
 import CountUp from "./components/CountUp/CountUp";
 import ScrollReveal from "./components/ScrollReveal/ScrollReveal";
 import ScrollTicker from "./components/ScrollTicker/ScrollTicker";
 import InteractiveTicker from "./components/InteractiveTicker/InteractiveTicker";
 
 import Aurora from "./components/Aurora/Aurora";
-import AOS from 'aos';
+import ElectricBorder from "./components/ElectricBorder/ElectricBorder";
 import ChatRoom from "./components/ChatRoom";
+import { scrollToTarget } from "./utils/scrollManager";
 import 'aos/dist/aos.css';
-// ..
-AOS.init();
 
 function App() {
-  const aboutRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  // State untuk Project
   const [selectedProject, setSelectedProject] = useState(null);
   const handleProjectClick = (project) => {
     setSelectedProject(project);
@@ -45,38 +42,29 @@ function App() {
     setSelectedCertificate(null);
   };
 
-  useEffect(() => {
-    const isReload =
-      performance.getEntriesByType("navigation")[0]?.type === "reload";
-
-    if (isReload) {
-      const baseUrl = window.location.origin + "/portofolio/";
-      window.location.replace(baseUrl);
-    }
-  }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    if (aboutRef.current) {
-      observer.observe(aboutRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  const certificateChromaItems = listSertifikat.map((cert, index) => {
+    const accents = [
+      { borderColor: "#8B5CF6", gradient: "linear-gradient(145deg, rgba(139, 92, 246, 0.4), #09090b)" },
+      { borderColor: "#10B981", gradient: "linear-gradient(145deg, rgba(16, 185, 129, 0.4), #09090b)" },
+      { borderColor: "#3B82F6", gradient: "linear-gradient(145deg, rgba(59, 130, 246, 0.4), #09090b)" },
+      { borderColor: "#EC4899", gradient: "linear-gradient(145deg, rgba(236, 72, 153, 0.4), #09090b)" },
+      { borderColor: "#F59E0B", gradient: "linear-gradient(145deg, rgba(245, 158, 11, 0.4), #09090b)" },
+      { borderColor: "#06B6D4", gradient: "linear-gradient(145deg, rgba(6, 182, 212, 0.4), #09090b)" },
+    ];
+    const accent = accents[index % accents.length];
+    return {
+      ...cert,
+      subtitle: cert.issuer,
+      handle: cert.date,
+      borderColor: accent.borderColor,
+      gradient: accent.gradient,
+    };
+  });
 
   return (
     <>
-      {/* Aurora Background dikembalikan ke warna semula */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10 ">
+      {/* Aurora Background constrained to hero viewport to prevent 5000px WebGL canvas */}
+      <div className="absolute top-0 left-0 w-full h-[100vh] max-h-[960px] -z-10 overflow-hidden pointer-events-none">
         <Aurora
           colorStops={["#577870", "#1F97A6", "#127B99"]}
           blend={0.5}
@@ -84,7 +72,7 @@ function App() {
           speed={0.5}
         />
       </div>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
 
         <div className="hero grid md:grid-cols-2 items-center pt-10 xl:gap-0 gap-6 grid-cols-1">
           <div className="animate__animated animate__fadeInUp animate__delay-3s">
@@ -106,12 +94,19 @@ function App() {
               <a
                 href="./assets/CV.pdf"
                 download="Ahmad_Irsyad_CV.pdf"
-                className="font-semibold bg-[#1a1a1a] p-4 px-6 rounded-full border border-gray-700 hover:bg-[#222] transition-colors"
+                className="cursor-target font-semibold bg-[#1a1a1a] p-4 px-6 rounded-full border border-gray-700 hover:bg-[#222] transition-colors"
               >
                 <ShinyText text="Download CV" disabled={false} speed={3} className="custom-class" />
               </a>
 
-              <a href="#project" className="font-semibold bg-[#1a1a1a] p-4 px-6 rounded-full border border-gray-700 hover:bg-[#222] transition-colors">
+              <a
+                href="#project"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToTarget("#project", { offset: -30 });
+                }}
+                className="cursor-target font-semibold bg-[#1a1a1a] p-4 px-6 rounded-full border border-gray-700 hover:bg-[#222] transition-colors"
+              >
                 <ShinyText text="Explore My Projects" disabled={false} speed={3} className="custom-class" />
               </a>
             </div>
@@ -128,7 +123,7 @@ function App() {
               showUserInfo={true}
               enableTilt={true}
               enableMobileTilt={false}
-              onContactClick={() => console.log('Contact clicked')}
+              onContactClick={() => scrollToTarget("#contact", { offset: -30 })}
             />
           </div>
         </div>
@@ -162,7 +157,7 @@ function App() {
                 </div>
 
                 {/* Counter Animation Stats */}
-                <div ref={aboutRef} className="flex flex-col sm:flex-row items-center sm:justify-between text-center sm:text-left gap-y-8 sm:gap-y-0 mb-4 w-full">
+                <div className="flex flex-col sm:flex-row items-center sm:justify-between text-center sm:text-left gap-y-8 sm:gap-y-0 mb-4 w-full">
                   <div>
                     <h1 className="text-3xl md:text-4xl mb-1">
                       <CountUp
@@ -232,27 +227,45 @@ function App() {
           </div>
         </div>
 
-        {/* Project */}
-        <div className="proyek mt-32 py-10" id="project" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true"></div>
-        <h1
-          className="text-4xl md:text-5xl mb-3 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-emerald-400 text-center"
-          data-aos="fade-up"
-          data-aos-duration="1000"
-          data-aos-once="true"
-        >Project</h1>
-        <p className="text-base/loose text-center opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">Showcasing a selection of projects that reflect my skills, creativity, and passion for building meaningful digital experiences.</p>
-        <div className="proyek-box mt-14" >
-          <div style={{ height: 'auto', position: 'relative' }} data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400" data-aos-once="true" >
-            <ChromaGrid
-              items={listProyek}
-              onItemClick={handleProjectClick}
-              radius={500}
-              damping={0.45}
-              fadeOut={0.6}
-              ease="power3.out"
-            />
+        {/* Projects — Editorial ScrollStack */}
+        <section className="proyek mt-32 py-10" id="project">
+          <div className="text-center max-w-3xl mx-auto mb-14" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
+            <h1
+              className="text-4xl md:text-5xl mb-3 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-emerald-400 text-center"
+              data-aos="fade-up"
+              data-aos-duration="1000"
+              data-aos-once="true"
+            >
+              Featured Projects
+            </h1>
+            <p className="text-base/loose text-center opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">
+              Showcasing a selection of projects that reflect my skills, creativity, and passion for building meaningful digital experiences.
+            </p>
           </div>
-        </div>
+
+          <div className="proyek-box w-full max-w-6xl xl:max-w-[1240px] mx-auto px-2 sm:px-4">
+            <ScrollStack
+              itemDistance={90}
+              itemScale={0.025}
+              itemStackDistance={26}
+              baseScale={0.88}
+              stackPosition="18%"
+              useWindowScroll={true}
+              className="w-full"
+            >
+              {listProyek.map((project, index) => (
+                <ScrollStackItem key={project.id || index}>
+                  <ProjectStackCard
+                    project={project}
+                    index={index}
+                    total={listProyek.length}
+                    onProjectClick={handleProjectClick}
+                  />
+                </ScrollStackItem>
+              ))}
+            </ScrollStack>
+          </div>
+        </section>
 
         {/* Certificates — Magic Bento Grid */}
         <div className="sertifikat mt-32 py-10" id="certificates" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
@@ -266,14 +279,15 @@ function App() {
           </h1>
           <p className="text-base/loose text-center opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">Showcasing my academic achievements, training completions, and skill validations.</p>
         </div>
-        <div className="sertifikat-box mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-10" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400" data-aos-once="true">
-          {listSertifikat.map((cert) => (
-            <CertificateCard
-              key={cert.id}
-              cert={cert}
-              onClick={handleCertificateClick}
-            />
-          ))}
+        <div className="sertifikat-box mt-14 pb-10" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" data-aos-once="true">
+          <ChromaGrid
+            items={certificateChromaItems}
+            onItemClick={handleCertificateClick}
+            radius={300}
+            damping={0.45}
+            fadeOut={0.6}
+            ease="power3.out"
+          />
         </div>
 
         {/* Contact & Chat */}
@@ -298,14 +312,22 @@ function App() {
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch">
 
             <div
-              className="flex-1 relative p-[1px] rounded-3xl bg-gradient-to-br from-zinc-700 to-zinc-800 shadow-xl"
+              className="flex-1 relative"
               data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400" data-aos-once="true"
             >
-              <div className="w-full h-full bg-zinc-950/80 backdrop-blur-xl p-8 rounded-[22px] border border-zinc-700/50 flex flex-col">
-                <div className="flex-grow">
-                  <ChatRoom />
+              <ElectricBorder
+                color="#7df9ff"
+                speed={1}
+                chaos={0.06}
+                borderRadius={24}
+                className="h-full w-full"
+              >
+                <div className="w-full h-full bg-zinc-950/85 backdrop-blur-xl p-8 rounded-3xl border border-zinc-800/80 shadow-2xl flex flex-col">
+                  <div className="flex-grow">
+                    <ChatRoom />
+                  </div>
                 </div>
-              </div>
+              </ElectricBorder>
             </div>
 
             <div className="flex-1 relative">

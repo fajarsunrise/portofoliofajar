@@ -1,0 +1,77 @@
+/* Hide native cursor in footer when target cursor is active */
+html.footer-target-cursor-active footer,
+html.footer-target-cursor-active footer * {
+  cursor: none !important;
+}
+
+.target-cursor-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 99999;
+  opacity: 0;
+  will-change: transform, opacity;
+  transform: translate(0, 0);
+}
+
+.target-cursor-dot {
+  position: absolute;
+  top: -1.5px;
+  left: -1.5px;
+  width: 3px;
+  height: 3px;
+  background-color: #38bdf8;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.75);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.target-cursor-corners-group {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.target-cursor-corner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid #38bdf8;
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.45));
+  will-change: transform;
+}
+
+.corner-tl {
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 1.5px;
+}
+
+.corner-tr {
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 1.5px;
+}
+
+.corner-br {
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 1.5px;
+}
+
+.corner-bl {
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: 1.5px;
+}

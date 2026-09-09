@@ -1,6 +1,5 @@
-/* eslint-disable react/no-unknown-property */
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas, extend, useFrame } from '@react-three/fiber';
 import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
 import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint } from '@react-three/rapier';
@@ -20,7 +19,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
@@ -44,30 +43,78 @@ class ErrorBoundary extends React.Component {
 }
 
 export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], fov = 20, transparent = true }) {
+  const [physicsReady, setPhysicsReady] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin: '150px' }
+    );
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    import('@dimforge/rapier3d-compat')
+      .then((RAPIER) => RAPIER.init())
+      .then(() => {
+        if (active) {
+          setPhysicsReady(true);
+        }
+      })
+      .catch((err) => {
+        console.error("Rapier initialization error:", err);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
-    <div className="lanyard-wrapper">
+    <div className="lanyard-wrapper" ref={wrapperRef}>
       <ErrorBoundary>
-        <Canvas
-          camera={{ position: position, fov: fov }}
-          dpr={[1, 1.5]}
-          gl={{
-            alpha: transparent,
-            antialias: false,
-            powerPreference: "default"
-          }}
-          onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
-        >
-          <ambientLight intensity={Math.PI} />
-          <Physics gravity={gravity} timeStep={1 / 60}>
-            <Band />
-          </Physics>
-          <Environment blur={0.75}>
-            <Lightformer intensity={2} color="white" position={[0, -1, 5]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
-            <Lightformer intensity={3} color="white" position={[-1, -1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
-            <Lightformer intensity={3} color="white" position={[1, 1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
-            <Lightformer intensity={10} color="white" position={[-10, 0, 14]} rotation={[0, Math.PI / 2, Math.PI / 3]} scale={[100, 10, 1]} />
-          </Environment>
-        </Canvas>
+        {physicsReady ? (
+          <Canvas
+            camera={{ position: position, fov: fov }}
+            dpr={[1, 1.25]}
+            frameloop={isVisible ? "always" : "never"}
+            gl={{
+              alpha: transparent,
+              antialias: false,
+              powerPreference: "default"
+            }}
+            onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
+          >
+            <ambientLight intensity={Math.PI} />
+            <Suspense fallback={null}>
+              <Physics gravity={gravity} timeStep={1 / 60}>
+                <Band />
+              </Physics>
+              <Environment blur={0.75}>
+                <Lightformer intensity={2} color="white" position={[0, -1, 5]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
+                <Lightformer intensity={3} color="white" position={[-1, -1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
+                <Lightformer intensity={3} color="white" position={[1, 1, 1]} rotation={[0, 0, Math.PI / 3]} scale={[100, 0.1, 1]} />
+                <Lightformer intensity={10} color="white" position={[-10, 0, 14]} rotation={[0, Math.PI / 2, Math.PI / 3]} scale={[100, 10, 1]} />
+              </Environment>
+            </Suspense>
+          </Canvas>
+        ) : (
+          <div className="flex flex-col items-center justify-center w-full h-[320px] rounded-3xl bg-zinc-950/40 border border-zinc-800/50 p-6 text-center animate-pulse">
+            <img src="./assets/ahmad.png" className="w-16 h-16 rounded-full mb-4 opacity-75" alt="Profile avatar" />
+            <p className="text-sm font-semibold text-zinc-300">Interactive 3D Profile Lanyard</p>
+            <p className="text-xs text-zinc-500 mt-1">Initializing 3D physics...</p>
+          </div>
+        )}
       </ErrorBoundary>
     </div>
   );
@@ -85,7 +132,7 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
   const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
   const [dragged, drag] = useState(false);
   const [hovered, hover] = useState(false);
-  const [isSmall, setIsSmall] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1024);
+  const isSmall = typeof window !== 'undefined' && window.innerWidth < 1024;
 
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import {
   motion,
   useMotionValue,
@@ -19,10 +19,14 @@ function AppleDockItem({
   baseItemSize = 48,
 }) {
   const ref = useRef(null);
+  const cachedRectRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const mouseDistance = useTransform(mouseX, (val) => {
-    const rect = ref.current?.getBoundingClientRect() ?? {
+    if (!cachedRectRef.current && ref.current) {
+      cachedRectRef.current = ref.current.getBoundingClientRect();
+    }
+    const rect = cachedRectRef.current ?? {
       x: 0,
       width: baseItemSize,
     };
@@ -44,8 +48,14 @@ function AppleDockItem({
         width: size,
         height: size,
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        if (ref.current) cachedRectRef.current = ref.current.getBoundingClientRect();
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        cachedRectRef.current = null;
+        setIsHovered(false);
+      }}
       onClick={onClick}
       className="apple-dock-item"
     >

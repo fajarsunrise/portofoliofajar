@@ -1,0 +1,8 @@
+{
+  "name": "Irsyad Portfolio",
+  "description": "Personal developer portfolio for Ahmad Irsyad featuring modern web projects, 3D interactive elements, and skill showcase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

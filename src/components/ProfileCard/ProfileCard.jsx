@@ -326,7 +326,7 @@ const ProfileCardComponent = ({
                   </div>
                 </div>
                 <button
-                  className="pc-contact-btn"
+                  className="cursor-target pc-contact-btn"
                   onClick={handleContactClick}
                   style={{ pointerEvents: "auto" }}
                   type="button"

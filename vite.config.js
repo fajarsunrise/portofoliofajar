@@ -6,4 +6,12 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: "/",
   plugins: [react(), tailwindcss()],
+  server: {
+    host: "0.0.0.0",
+    port: 3000,
+    allowedHosts: true,
+  },
+  optimizeDeps: {
+    include: ['@dimforge/rapier3d-compat', '@react-three/rapier'],
+  },
 })

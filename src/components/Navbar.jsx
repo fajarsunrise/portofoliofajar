@@ -1,17 +1,35 @@
 import { useState, useEffect } from "react";
+import { subscribeToScroll, scrollToTarget } from "../utils/scrollManager";
 
 const Navbar = ({ hidden = false }) => {
-  // ⛔ Saat hidden, jangan render apa pun
-  if (hidden) return null;
-
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setActive(window.scrollY > 150);
-    handleScroll(); // init posisi saat mount
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    if (hidden) return;
+    let isScrolled = false;
+
+    const unsubscribe = subscribeToScroll(({ scroll }) => {
+      const next = scroll > 150;
+      if (next !== isScrolled) {
+        isScrolled = next;
+        setActive(next);
+      }
+    });
+
+    return unsubscribe;
+  }, [hidden]);
+
+  const handleNavClick = (e, targetId) => {
+    e.preventDefault();
+    if (targetId === "#home") {
+      scrollToTarget(0, { offset: 0, duration: 1.2 });
+    } else {
+      scrollToTarget(targetId, { offset: -30, duration: 1.2 });
+    }
+  };
+
+  // ⛔ Saat hidden, jangan render apa pun
+  if (hidden) return null;
 
   return (
     <nav className="navbar relative z-50 py-7 flex items-center justify-between px-6 md:px-12">
@@ -33,12 +51,11 @@ const Navbar = ({ hidden = false }) => {
         ${active ? "top-0 opacity-100" : "-top-10 opacity-0"}`}
       >
         {/* Menambahkan transition-colors dan hover */}
-        <li><a href="#home" className="sm:text-lg text-base font-medium transition-colors hover:text-gray-300">Home</a></li>
-        <li><a href="#about" className="sm:text-lg text-base font-medium transition-colors hover:text-gray-300">About</a></li>
-        <li><a href="#project" className="sm:text-lg text-base font-medium transition-colors hover:text-gray-300">Project</a></li>
-        <li><a href="#sertifikat" className="sm:text-lg text-base font-medium transition-colors hover:text-gray-300">Sertifikat</a></li>
-        <li><a href="#contact" className="sm:text-lg text-base font-medium transition-colors hover:text-gray-300">Contact</a></li>
-
+        <li><a href="#home" onClick={(e) => handleNavClick(e, "#home")} className="cursor-target sm:text-lg text-base font-medium transition-colors hover:text-gray-300 px-2 py-0.5 rounded-md inline-block">Home</a></li>
+        <li><a href="#about" onClick={(e) => handleNavClick(e, "#about")} className="cursor-target sm:text-lg text-base font-medium transition-colors hover:text-gray-300 px-2 py-0.5 rounded-md inline-block">About</a></li>
+        <li><a href="#project" onClick={(e) => handleNavClick(e, "#project")} className="cursor-target sm:text-lg text-base font-medium transition-colors hover:text-gray-300 px-2 py-0.5 rounded-md inline-block">Project</a></li>
+        <li><a href="#certificates" onClick={(e) => handleNavClick(e, "#certificates")} className="cursor-target sm:text-lg text-base font-medium transition-colors hover:text-gray-300 px-2 py-0.5 rounded-md inline-block">Sertifikat</a></li>
+        <li><a href="#contact" onClick={(e) => handleNavClick(e, "#contact")} className="cursor-target sm:text-lg text-base font-medium transition-colors hover:text-gray-300 px-2 py-0.5 rounded-md inline-block">Contact</a></li>
       </ul>
     </nav>
   );
