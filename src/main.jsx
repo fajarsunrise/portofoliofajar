@@ -19,10 +19,12 @@ createRoot(document.getElementById('root')).render(
     <PreLoader/>
     <CursorSystem />
     <LenisWrapper>
-      <div className="container mx-auto px-4 sm:px-6 max-w-full overflow-x-hidden relative z-10">
-        <Navbar />
-        <App />
-        <Footer/>
+      <div className="w-full overflow-x-hidden relative z-10 flex flex-col">
+        <div className="container mx-auto px-4 sm:px-6 max-w-full">
+          <Navbar />
+          <App />
+        </div>
+        <Footer />
       </div>
     </LenisWrapper>
   </>,

@@ -22,6 +22,31 @@ html, body, #root {
   pointer-events: none;
 }
 
+/* Optimasi Low-End Device: Cegah Repaint Storm dari Hover Effects saat Scrolling Cepat */
+.lenis-scrolling {
+  pointer-events: none;
+}
+.lenis-scrolling a,
+.lenis-scrolling button,
+.lenis-scrolling input,
+.lenis-scrolling textarea {
+  pointer-events: auto;
+}
+
+/* Rendering Isolation & Offscreen Virtualization via Modern CSS */
+.optimize-offscreen {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 750px;
+}
+
+/* Hardware Layer Acceleration Helper */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
 @layer base {
   :root {
     /* Palet warna konsisten */

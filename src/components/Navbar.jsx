@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { subscribeToScroll, scrollToTarget } from "../utils/scrollManager";
+import ShinyText from "./ShinyText/ShinyText";
 
 const Navbar = ({ hidden = false }) => {
   const [active, setActive] = useState(false);
@@ -36,7 +37,7 @@ const Navbar = ({ hidden = false }) => {
       {/* Logo */}
       <div className="logo">
         <h1 className="text-3xl font-bold text-white p-1 md:bg-transparent md:text-white">
-          Portofolio
+          <ShinyText text="Portofolio" speed={2.5} color="#717171" shineColor="#ffffff" />
         </h1>
       </div>
 

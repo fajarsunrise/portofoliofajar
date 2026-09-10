@@ -39,15 +39,19 @@ class ScrollManager {
     this.lowEnd = isLowEndDevice();
     this.cachedScroll = window.scrollY || document.documentElement.scrollTop || 0;
 
-    // 1. Initialize master Lenis instance
+    // 1. Initialize master Lenis instance with Low-End & Touch Optimizations
     this.lenis = new Lenis({
-      duration: this.reduced ? 0.01 : this.lowEnd ? 0.95 : 1.2,
+      // Durasi ideal: 0.95s untuk low-end agar ringan, 1.2s untuk desktop high-end, 0.01s untuk reduced motion
+      duration: this.reduced ? 0.01 : this.lowEnd ? 0.95 : 1.15,
+      // Easing eksponensial: cepat merespons di awal dan melambat secara natural tanpa membebani GPU
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: !this.reduced,
       wheelMultiplier: 1,
-      touchMultiplier: 1.2,
+      // PENTING: Matikan interpolasi sentuh di HP/tablet agar 100% menggunakan native OS momentum scrolling
+      syncTouch: false,
+      touchMultiplier: 0,
       infinite: false,
       anchors: true,
       autoResize: true,
@@ -89,6 +93,18 @@ class ScrollManager {
 
     gsap.ticker.add(this.tickerCallback);
     gsap.ticker.lagSmoothing(0);
+
+    // 4. Auto-pause RAF loop saat tab tidak aktif untuk menghemat daya baterai & memori CPU
+    this.visibilityListener = () => {
+      if (document.hidden) {
+        if (this.lenis) this.lenis.stop();
+        if (this.tickerCallback) gsap.ticker.remove(this.tickerCallback);
+      } else {
+        if (this.lenis) this.lenis.start();
+        if (this.tickerCallback) gsap.ticker.add(this.tickerCallback);
+      }
+    };
+    document.addEventListener('visibilitychange', this.visibilityListener);
 
     // 4. Fallback listener for native scroll changes (e.g. keyboard navigation, anchor jumps)
     this.nativeScrollListener = () => {
@@ -200,6 +216,11 @@ class ScrollManager {
     if (this.nativeScrollListener) {
       window.removeEventListener('scroll', this.nativeScrollListener);
       this.nativeScrollListener = null;
+    }
+
+    if (this.visibilityListener) {
+      document.removeEventListener('visibilitychange', this.visibilityListener);
+      this.visibilityListener = null;
     }
 
     if (this.lenis) {

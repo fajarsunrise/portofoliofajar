@@ -129,7 +129,12 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
   const { nodes, materials } = useGLTF(cardGLB);
   const texture = useTexture(lanyard);
 
-  const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
+  const [curve] = useState(() => new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(0.5, 0, 0),
+    new THREE.Vector3(1, 0, 0),
+    new THREE.Vector3(1.5, 0, 0)
+  ]));
   const [dragged, drag] = useState(false);
   const [hovered, hover] = useState(false);
   const isSmall = typeof window !== 'undefined' && window.innerWidth < 1024;
@@ -146,28 +151,110 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
     }
   }, [hovered, dragged]);
 
+  useEffect(() => {
+    if (band.current?.geometry?.setPoints) {
+      try {
+        const initialPoints = curve.getPoints(32);
+        if (initialPoints && initialPoints.length > 0) {
+          band.current.geometry.setPoints(initialPoints);
+        }
+      } catch (err) {
+        console.warn("Initial lanyard points warning:", err);
+      }
+    }
+  }, [curve]);
+
   useFrame((state, delta) => {
-    if (dragged) {
+    // Guard against large frame deltas (e.g. tab switch or backgrounding)
+    const safeDelta = Math.min(Math.max(delta, 0.001), 0.033);
+
+    const isValidVec = (v) =>
+      v &&
+      Number.isFinite(v.x) &&
+      Number.isFinite(v.y) &&
+      Number.isFinite(v.z) &&
+      Math.abs(v.x) < 50 &&
+      Math.abs(v.y) < 50 &&
+      Math.abs(v.z) < 50;
+
+    if (dragged && card.current) {
       vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
       dir.copy(vec).sub(state.camera.position).normalize();
       vec.add(dir.multiplyScalar(state.camera.position.length()));
-      [card, j1, j2, j3, fixed].forEach((ref) => ref.current?.wakeUp());
-      card.current?.setNextKinematicTranslation({ x: vec.x - dragged.x, y: vec.y - dragged.y, z: vec.z - dragged.z });
+      [card, j1, j2, j3, fixed].forEach((ref) => ref.current?.wakeUp?.());
+      if (
+        Number.isFinite(vec.x) && Number.isFinite(vec.y) && Number.isFinite(vec.z) &&
+        Number.isFinite(dragged.x) && Number.isFinite(dragged.y) && Number.isFinite(dragged.z)
+      ) {
+        card.current.setNextKinematicTranslation({
+          x: vec.x - dragged.x,
+          y: vec.y - dragged.y,
+          z: vec.z - dragged.z
+        });
+      }
     }
-    if (fixed.current) {
-      [j1, j2].forEach((ref) => {
-        if (!ref.current.lerped) ref.current.lerped = new THREE.Vector3().copy(ref.current.translation());
-        const clampedDistance = Math.max(0.1, Math.min(1, ref.current.lerped.distanceTo(ref.current.translation())));
-        ref.current.lerped.lerp(ref.current.translation(), delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed)));
+
+    if (fixed.current && j1.current && j2.current && j3.current && card.current) {
+      const fixedTrans = fixed.current.translation?.();
+      const j1Trans = j1.current.translation?.();
+      const j2Trans = j2.current.translation?.();
+      const j3Trans = j3.current.translation?.();
+
+      // Check for physics explosion / runaway values
+      if (!isValidVec(j1Trans) || !isValidVec(j2Trans) || !isValidVec(j3Trans)) {
+        // Recover physics bodies back to resting state
+        j1.current.setTranslation?.({ x: 0.5, y: 0, z: 0 }, true);
+        j2.current.setTranslation?.({ x: 1, y: 0, z: 0 }, true);
+        j3.current.setTranslation?.({ x: 1.5, y: 0, z: 0 }, true);
+        card.current.setTranslation?.({ x: 2, y: 0, z: 0 }, true);
+        card.current.setLinvel?.({ x: 0, y: 0, z: 0 }, true);
+        card.current.setAngvel?.({ x: 0, y: 0, z: 0 }, true);
+        return;
+      }
+
+      // Smoothly lerp joints with strictly bounded alpha
+      [
+        { ref: j1, target: j1Trans },
+        { ref: j2, target: j2Trans }
+      ].forEach(({ ref, target }) => {
+        if (!ref.current.lerped || !isValidVec(ref.current.lerped)) {
+          ref.current.lerped = new THREE.Vector3(target.x, target.y, target.z);
+        } else {
+          const dist = ref.current.lerped.distanceTo(target);
+          const clampedDistance = Math.max(0.1, Math.min(1, Number.isFinite(dist) ? dist : 0.1));
+          const speed = minSpeed + clampedDistance * (maxSpeed - minSpeed);
+          // Clamp alpha to [0, 1] to prevent exponential divergence
+          const alpha = Math.min(1, Math.max(0, safeDelta * Math.min(speed, 25)));
+          ref.current.lerped.lerp(target, alpha);
+        }
       });
-      curve.points[0].copy(j3.current.translation());
-      curve.points[1].copy(j2.current.lerped);
-      curve.points[2].copy(j1.current.lerped);
-      curve.points[3].copy(fixed.current.translation());
-      band.current.geometry.setPoints(curve.getPoints(32));
-      ang.copy(card.current.angvel());
-      rot.copy(card.current.rotation());
-      card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z });
+
+      const p0 = j3Trans;
+      const p1 = j2.current.lerped;
+      const p2 = j1.current.lerped;
+      const p3 = fixedTrans;
+
+      if (isValidVec(p0) && isValidVec(p1) && isValidVec(p2) && isValidVec(p3)) {
+        curve.points[0].copy(p0);
+        curve.points[1].copy(p1);
+        curve.points[2].copy(p2);
+        curve.points[3].copy(p3);
+
+        const pts = curve.getPoints(32);
+        if (pts && pts.length > 0 && pts.every(isValidVec)) {
+          if (band.current?.geometry?.setPoints) {
+            band.current.geometry.setPoints(pts);
+          }
+        }
+      }
+
+      const cardAng = card.current.angvel?.();
+      const cardRot = card.current.rotation?.();
+      if (cardAng && cardRot && isValidVec(cardAng) && Number.isFinite(cardRot.y)) {
+        ang.copy(cardAng);
+        rot.copy(cardRot);
+        card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z });
+      }
     }
   });
 
@@ -186,7 +273,13 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
           <group scale={2.25} position={[0, -1.2, -0.05]}
             onPointerOver={() => hover(true)} onPointerOut={() => hover(false)}
             onPointerUp={(e) => (e.target.releasePointerCapture(e.pointerId), drag(false))}
-            onPointerDown={(e) => (e.target.setPointerCapture(e.pointerId), drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation()))))}>
+            onPointerDown={(e) => {
+              e.target.setPointerCapture(e.pointerId);
+              const cardTrans = card.current?.translation?.();
+              if (cardTrans && Number.isFinite(cardTrans.x) && Number.isFinite(cardTrans.y) && Number.isFinite(cardTrans.z)) {
+                drag(new THREE.Vector3().copy(e.point).sub(vec.copy(cardTrans)));
+              }
+            }}>
             <mesh geometry={nodes.card.geometry}>
               <meshPhysicalMaterial map={materials.base.map} map-anisotropy={16} clearcoat={1} clearcoatRoughness={0.15} roughness={0.9} metalness={0.8} />
             </mesh>

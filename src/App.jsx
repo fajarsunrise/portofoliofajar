@@ -74,14 +74,14 @@ function App() {
       </div>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
 
-        <div className="hero grid md:grid-cols-2 items-center pt-10 xl:gap-0 gap-6 grid-cols-1">
+        <div className="hero grid md:grid-cols-2 items-center pt-10 xl:gap-0 gap-6 grid-cols-1" id="home">
           <div className="animate__animated animate__fadeInUp animate__delay-3s">
             <div className="flex items-center gap-3 mb-6 bg bg-zinc-800 w-fit p-4 rounded-2xl">
               <img src="./assets/ahmad.png" className="w-10 rounded-md" />
               <q>Avoid or just undertake it</q>
             </div>
             <h1 className="text-5xl font-bold mb-6">
-              <ShinyText text="Hi I'm Ahmad Irsyad Ald" disabled={false} speed={3} className='custom-class' />
+              <ShinyText text="Hi I'm Ahmad Irsyad Ald" speed={2.5} color="#717171" shineColor="#ffffff" className="custom-class" />
             </h1>
             <BlurText
               text="A passionate application and web developer dedicated to crafting modern, high-performance digital experiences through innovative and user-friendly solutions."
@@ -96,7 +96,7 @@ function App() {
                 download="Ahmad_Irsyad_CV.pdf"
                 className="cursor-target font-semibold bg-[#1a1a1a] p-4 px-6 rounded-full border border-gray-700 hover:bg-[#222] transition-colors"
               >
-                <ShinyText text="Download CV" disabled={false} speed={3} className="custom-class" />
+                <ShinyText text="Download CV" disabled={false} speed={3} color="#717171" shineColor="#ffffff" className="custom-class" />
               </a>
 
               <a
@@ -107,7 +107,7 @@ function App() {
                 }}
                 className="cursor-target font-semibold bg-[#1a1a1a] p-4 px-6 rounded-full border border-gray-700 hover:bg-[#222] transition-colors"
               >
-                <ShinyText text="Explore My Projects" disabled={false} speed={3} className="custom-class" />
+                <ShinyText text="Explore My Projects" disabled={false} speed={3} color="#717171" shineColor="#ffffff" className="custom-class" />
               </a>
             </div>
 
@@ -137,7 +137,7 @@ function App() {
             <div className="basis-full md:basis-7/12 pr-0 md:pr-8 border-b md:border-b-0 md:border-r border-violet-500/30">
               <div className="flex-1 text-left">
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-5">
-                  About Me
+                  <ShinyText text="About Me" speed={2.5} color="#717171" shineColor="#ffffff" />
                 </h1>
 
                 {/* ScrollReveal text — reveals word-by-word on scroll */}
@@ -200,7 +200,9 @@ function App() {
                   text="Working with heart, creating with mind."
                   disabled={false}
                   speed={3}
-                  className="text-sm md:text-base text-violet-400"
+                  color="#717171"
+                  shineColor="#ffffff"
+                  className="text-sm md:text-base font-medium"
                 />
               </div>
             </div>
@@ -214,12 +216,12 @@ function App() {
         {/* Tools & Technologies — Interactive Ticker */}
         <div className="tools mt-32">
           <h1
-            className="text-4xl md:text-5xl mb-3 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-emerald-400 text-center"
+            className="text-4xl md:text-5xl mb-3 font-extrabold text-center"
             data-aos="fade-up"
             data-aos-duration="1000"
             data-aos-once="true"
           >
-            Tools & Technologies
+            <ShinyText text="Tools & Technologies" speed={2.5} color="#717171" shineColor="#ffffff" />
           </h1>
           <p className="text-base/loose text-center opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">My Professional Skills</p>
           <div className="mt-14" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400" data-aos-once="true">
@@ -228,15 +230,18 @@ function App() {
         </div>
 
         {/* Projects — Editorial ScrollStack */}
-        <section className="proyek mt-32 py-10" id="project">
+        <section className="proyek mt-32 py-10 relative" id="project">
+          {/* Ambient colored aura for deeper and richer section depth */}
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] max-w-full h-[450px] bg-gradient-to-tr from-[#127B99]/20 via-violet-900/20 to-transparent blur-[120px] rounded-full pointer-events-none -z-10" />
+
           <div className="text-center max-w-3xl mx-auto mb-14" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
             <h1
-              className="text-4xl md:text-5xl mb-3 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-emerald-400 text-center"
+              className="text-4xl md:text-5xl mb-3 font-extrabold text-center"
               data-aos="fade-up"
               data-aos-duration="1000"
               data-aos-once="true"
             >
-              Featured Projects
+              <ShinyText text="Featured Projects" speed={2.5} color="#717171" shineColor="#ffffff" />
             </h1>
             <p className="text-base/loose text-center opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">
               Showcasing a selection of projects that reflect my skills, creativity, and passion for building meaningful digital experiences.
@@ -254,7 +259,10 @@ function App() {
               className="w-full"
             >
               {listProyek.map((project, index) => (
-                <ScrollStackItem key={project.id || index}>
+                <ScrollStackItem 
+                  key={project.id || index}
+                  itemClassName={index % 2 === 1 ? 'theme-blue' : 'theme-purple'}
+                >
                   <ProjectStackCard
                     project={project}
                     index={index}
@@ -270,12 +278,12 @@ function App() {
         {/* Certificates — Magic Bento Grid */}
         <div className="sertifikat mt-32 py-10" id="certificates" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
           <h1
-            className="text-4xl md:text-5xl mb-3 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-emerald-400 text-center"
+            className="text-4xl md:text-5xl mb-3 font-extrabold text-center"
             data-aos="fade-up"
             data-aos-duration="1000"
             data-aos-once="true"
           >
-            Certificates
+            <ShinyText text="Certificates" speed={2.5} color="#717171" shineColor="#ffffff" />
           </h1>
           <p className="text-base/loose text-center opacity-50" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" data-aos-once="true">Showcasing my academic achievements, training completions, and skill validations.</p>
         </div>
@@ -293,12 +301,12 @@ function App() {
         {/* Contact & Chat */}
         <div className="kontak mt-32 sm:p-10 p-0 relative z-10" id="contact">
           <h1
-            className="text-4xl md:text-5xl mb-3 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-emerald-400 text-center"
+            className="text-4xl md:text-5xl mb-3 font-extrabold text-center"
             data-aos="fade-up"
             data-aos-duration="1000"
             data-aos-once="true"
           >
-            Chat & Contact
+            <ShinyText text="Chat & Contact" speed={2.5} color="#717171" shineColor="#ffffff" />
           </h1>
           <p
             className="text-base/loose text-center mb-12 text-zinc-400"
@@ -392,7 +400,9 @@ function App() {
                         text="Send Message"
                         disabled={false}
                         speed={3}
-                        className="font-bold tracking-wide text-white text-center"
+                        color="#717171"
+                        shineColor="#ffffff"
+                        className="font-bold tracking-wide text-center"
                       />
                     </div>
                   </button>

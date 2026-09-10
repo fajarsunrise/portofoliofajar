@@ -3,8 +3,11 @@ import { ArrowUpRight, ExternalLink } from 'lucide-react';
 
 export const ProjectStackCard = ({
   project,
+  index = 0,
   onProjectClick,
 }) => {
+  const isBlue = index % 2 === 1;
+
   // Derive contextual tags from project data
   const getTags = (item) => {
     const tagsMap = {
@@ -34,33 +37,31 @@ export const ProjectStackCard = ({
         }
       }}
     >
-      {/* Top Action Bar without numbers and brackets */}
-      <div className="flex items-center justify-end gap-2.5 pb-3 sm:pb-4 border-b border-violet-500/20">
-        {project.url && (
+      {/* Top Action Bar */}
+      {project.url && (
+        <div className={`flex items-center justify-end gap-2.5 pb-3 sm:pb-4 border-b ${isBlue ? 'border-violet-500/40' : 'border-[#127B99]/50'}`}>
           <a
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono text-zinc-400 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono text-zinc-300 hover:text-white bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/60 transition-colors"
             title="Open External Repository / Demo"
           >
             <span>GITHUB</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
-        )}
-        <span className="text-xs sm:text-sm font-mono text-violet-400 opacity-90 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all flex items-center gap-1">
-          VIEW DETAILS
-          <ArrowUpRight className="w-4 h-4" />
-        </span>
-      </div>
+        </div>
+      )}
 
       {/* Main Content Grid with tightened spacing */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-7 lg:gap-8 pt-4 sm:pt-5 items-center">
         {/* Left Column: Typography & Narrative */}
         <div className="lg:col-span-7 flex flex-col justify-between space-y-4 sm:space-y-5">
           <div className="space-y-2.5">
-            <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.35rem] font-extrabold text-white tracking-tight leading-[1.18] group-hover:text-violet-300 transition-colors duration-300">
+            <h3 className={`text-2xl sm:text-3xl md:text-4xl lg:text-[2.35rem] font-extrabold text-white tracking-tight leading-[1.18] transition-colors duration-300 ${
+              isBlue ? 'group-hover:text-violet-200' : 'group-hover:text-[#52d6fc]'
+            }`}>
               {project.title}
             </h3>
 
@@ -73,7 +74,11 @@ export const ProjectStackCard = ({
               {tags.map((tag, idx) => (
                 <span
                   key={idx}
-                  className="text-xs font-mono uppercase tracking-wider px-2.5 py-1 rounded-md bg-violet-950/40 border border-violet-500/30 text-violet-300"
+                  className={`text-xs font-mono uppercase tracking-wider px-2.5 py-1 rounded-md font-semibold ${
+                    isBlue
+                      ? 'bg-violet-950/70 border border-violet-500/50 text-violet-200 shadow-sm shadow-violet-900/40'
+                      : 'bg-[#0e4453]/80 border border-[#127B99]/70 text-[#5ee3ff] shadow-sm shadow-[#127B99]/30'
+                  }`}
                 >
                   {tag}
                 </span>
@@ -89,7 +94,11 @@ export const ProjectStackCard = ({
                 e.stopPropagation();
                 onProjectClick?.(project);
               }}
-              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold tracking-wide bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-600/25 transition-all hover:scale-105 active:scale-95"
+              className={`inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold tracking-wide text-white shadow-xl transition-all hover:scale-105 active:scale-95 ${
+                isBlue
+                  ? 'bg-violet-600 hover:bg-violet-500 shadow-violet-600/40 border border-violet-400/30'
+                  : 'bg-[#127B99] hover:bg-[#0e6179] shadow-[#127B99]/45 border border-[#127B99]/40'
+              }`}
             >
               <span>Explore Project Case</span>
               <ArrowUpRight className="w-4 h-4" />
@@ -101,7 +110,7 @@ export const ProjectStackCard = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium text-zinc-300 hover:text-white bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-700/60 transition-all"
+                className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium text-zinc-300 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 transition-all"
               >
                 <span>Live Repository</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -121,11 +130,6 @@ export const ProjectStackCard = ({
             />
             {/* Subtle Gradient Vignette */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-
-            {/* Corner Badge */}
-            <div className="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/10 text-[10px] sm:text-xs font-mono text-emerald-400">
-              INTERACTIVE PREVIEW
-            </div>
           </div>
         </div>
       </div>

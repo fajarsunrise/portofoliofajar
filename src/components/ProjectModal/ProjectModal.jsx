@@ -42,6 +42,8 @@ const ProjectModal = ({ isOpen, onClose, project }) => {
 
   if (!isOpen || !project) return null;
 
+  const isBlue = project.id ? (project.id % 2 === 0) : false;
+
   return createPortal(
     // Overlay backdrop - centered horizontally and vertically
     <div
@@ -65,7 +67,9 @@ const ProjectModal = ({ isOpen, onClose, project }) => {
       {/* Modal Content Card */}
       <div
         onClick={(e) => e.stopPropagation()} // Mencegah modal tertutup saat diklik di dalam
-        className={`relative bg-zinc-900/95 border border-violet-500/40 rounded-2xl shadow-2xl shadow-violet-500/20 w-full max-w-lg overflow-hidden mx-auto my-auto flex flex-col items-center text-center transform transition-all duration-300 ${isClosing ? 'animate-out' : 'animate-in'}`}
+        className={`relative bg-zinc-900/98 border-2 ${
+          isBlue ? 'border-[#127B99] shadow-[0_0_35px_rgba(18,123,153,0.4)]' : 'border-violet-500/80 shadow-[0_0_35px_rgba(139,92,246,0.35)]'
+        } rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden mx-auto my-auto flex flex-col items-center text-center transform transition-all duration-300 ${isClosing ? 'animate-out' : 'animate-in'}`}
         style={{
           marginLeft: 'auto',
           marginRight: 'auto',
@@ -109,7 +113,9 @@ const ProjectModal = ({ isOpen, onClose, project }) => {
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-flex items-center justify-center gap-2 font-semibold bg-violet-600 hover:bg-violet-500 text-white py-3 px-8 rounded-full cursor-pointer shadow-lg shadow-violet-600/25 transition-all hover:scale-105 active:scale-95 text-sm sm:text-base"
+            className={`mt-2 inline-flex items-center justify-center gap-2 font-semibold ${
+              isBlue ? 'bg-violet-600 hover:bg-violet-500 shadow-violet-600/25' : 'bg-[#127B99] hover:bg-[#1691b5] shadow-[#127B99]/30'
+            } text-white py-3 px-8 rounded-full cursor-pointer shadow-lg transition-all hover:scale-105 active:scale-95 text-sm sm:text-base`}
           >
             <FiGithub size={18} />
             <span>Source Code</span>

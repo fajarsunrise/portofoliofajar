@@ -4,10 +4,11 @@ import './ShinyText.css';
 
 const ShinyText = ({
   text,
+  children,
   disabled = false,
   speed = 2,
   className = '',
-  color = '#b5b5b5',
+  color = '#717171',
   shineColor = '#ffffff',
   spread = 120,
   yoyo = false,
@@ -99,8 +100,17 @@ const ShinyText = ({
     backgroundSize: '200% auto',
     WebkitBackgroundClip: 'text',
     backgroundClip: 'text',
-    WebkitTextFillColor: 'transparent'
+    WebkitTextFillColor: 'transparent',
+    color: 'transparent'
   };
+
+  if (disabled) {
+    return (
+      <span className={`shiny-text ${className}`} style={{ color }}>
+        {text || children}
+      </span>
+    );
+  }
 
   return (
     <motion.span
@@ -109,7 +119,7 @@ const ShinyText = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {text}
+      {text || children}
     </motion.span>
   );
 };
