@@ -7,7 +7,7 @@ const WhatsAppButton = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
-    window.open('https://wa.me/6287767132263', '_blank', 'noopener,noreferrer');
+    window.open('https://wa.me/62882005085948', '_blank', 'noopener,noreferrer');
   };
 
   return (

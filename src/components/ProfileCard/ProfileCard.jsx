@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback, useMemo } from "react";
+import { getFullImageUrl } from "../../api/config";
 import "./ProfileCard.css";
 
 const DEFAULT_BEHIND_GRADIENT =
@@ -297,12 +298,17 @@ const ProfileCardComponent = ({
           <div className="pc-content pc-avatar-content">
             <img
               className="avatar"
-              src={avatarUrl}
+              src={getFullImageUrl(avatarUrl) || "/default-avatar.png"}
               alt={`${name || "User"} avatar`}
               loading="lazy"
+              onLoad={(e) => {
+                e.currentTarget.style.display = "";
+              }}
               onError={(e) => {
-                const target = e.target;
-                target.style.display = "none";
+                const target = e.currentTarget;
+                if (!target.src.endsWith("/default-avatar.png")) {
+                  target.src = "/default-avatar.png";
+                }
               }}
             />
             {showUserInfo && (
@@ -310,13 +316,17 @@ const ProfileCardComponent = ({
                 <div className="pc-user-details">
                   <div className="pc-mini-avatar">
                     <img
-                      src={miniAvatarUrl || avatarUrl}
+                      src={getFullImageUrl(miniAvatarUrl || avatarUrl) || "/default-avatar.png"}
                       alt={`${name || "User"} mini avatar`}
                       loading="lazy"
+                      onLoad={(e) => {
+                        e.currentTarget.style.display = "";
+                      }}
                       onError={(e) => {
-                        const target = e.target;
-                        target.style.opacity = "0.5";
-                        target.src = avatarUrl;
+                        const target = e.currentTarget;
+                        if (!target.src.endsWith("/default-avatar.png")) {
+                          target.src = "/default-avatar.png";
+                        }
                       }}
                     />
                   </div>

@@ -1,20 +1,15 @@
 import './ScrollTicker.css';
 
-const tickerItems = [
-  "Full-Stack Developer",
-  "Front-End Developer",
-  "React Developer",
-  "UI/UX Designer",
-  "Next.js",
-  "TypeScript",
-  "Machine Learning",
-  "Artificial Intelligence",
-  "Problem Solver",
-];
+const ScrollTicker = ({ text = "" }) => {
+  // Parse marquee_text from API heroes (split by bullet, comma, slash, or pipe)
+  const itemsList = text && typeof text === 'string'
+    ? text.split(/[•|,/]/).map((t) => t.trim()).filter(Boolean)
+    : [];
 
-const ScrollTicker = () => {
+  const displayList = itemsList.length > 0 ? itemsList : (text ? [text] : []);
+
   // Duplicate items for seamless loop
-  const items = [...tickerItems, ...tickerItems];
+  const items = [...displayList, ...displayList, ...displayList, ...displayList];
 
   return (
     <div className="scroll-ticker-wrapper my-16">

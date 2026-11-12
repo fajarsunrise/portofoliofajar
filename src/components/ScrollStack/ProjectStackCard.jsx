@@ -8,17 +8,22 @@ export const ProjectStackCard = ({
 }) => {
   const isBlue = index % 2 === 1;
 
-  // Derive contextual tags from project data
+  // Mengambil tag teknologi murni secara dinamis dari API projects
   const getTags = (item) => {
-    const tagsMap = {
-      1: ['AI / ML', 'Healthcare', 'Computer Vision'],
-      2: ['IoT System', 'Air Quality', 'Hardware'],
-      3: ['Telemedicine', 'Sensors', 'Real-time Web'],
-      4: ['Creative Dev', 'Editorial UI', 'Full-stack'],
-      5: ['Accessibility', 'Vision Health', 'Cross-Platform'],
-      6: ['E-Commerce', 'Next.js', 'UI/UX Design'],
-    };
-    return tagsMap[item.id] || ['Engineering', 'Design', 'Architecture'];
+    if (!item) return [];
+    if (Array.isArray(item.technologies) && item.technologies.length > 0) {
+      return item.technologies;
+    }
+    if (Array.isArray(item.tech) && item.tech.length > 0) {
+      return item.tech;
+    }
+    if (typeof item.technologies === 'string' && item.technologies.trim()) {
+      return item.technologies.split(',').map((t) => t.trim()).filter(Boolean);
+    }
+    if (typeof item.tech === 'string' && item.tech.trim()) {
+      return item.tech.split(',').map((t) => t.trim()).filter(Boolean);
+    }
+    return [];
   };
 
   const tags = getTags(project);
@@ -54,14 +59,13 @@ export const ProjectStackCard = ({
         </div>
       )}
 
-      {/* Main Content Grid with tightened spacing */}
+      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-7 lg:gap-8 pt-4 sm:pt-5 items-center">
         {/* Left Column: Typography & Narrative */}
         <div className="lg:col-span-7 flex flex-col justify-between space-y-4 sm:space-y-5">
           <div className="space-y-2.5">
-            <h3 className={`text-2xl sm:text-3xl md:text-4xl lg:text-[2.35rem] font-extrabold text-white tracking-tight leading-[1.18] transition-colors duration-300 ${
-              isBlue ? 'group-hover:text-violet-200' : 'group-hover:text-[#52d6fc]'
-            }`}>
+            <h3 className={`text-2xl sm:text-3xl md:text-4xl lg:text-[2.35rem] font-extrabold text-white tracking-tight leading-[1.18] transition-colors duration-300 ${isBlue ? 'group-hover:text-violet-200' : 'group-hover:text-[#52d6fc]'
+              }`}>
               {project.title}
             </h3>
 
@@ -69,36 +73,36 @@ export const ProjectStackCard = ({
               {project.fullDescription || project.subtitle}
             </p>
 
-            {/* Tags moved below paragraph with tighter spacing */}
-            <div className="flex flex-wrap gap-2 pt-1">
-              {tags.map((tag, idx) => (
-                <span
-                  key={idx}
-                  className={`text-xs font-mono uppercase tracking-wider px-2.5 py-1 rounded-md font-semibold ${
-                    isBlue
-                      ? 'bg-violet-950/70 border border-violet-500/50 text-violet-200 shadow-sm shadow-violet-900/40'
-                      : 'bg-[#0e4453]/80 border border-[#127B99]/70 text-[#5ee3ff] shadow-sm shadow-[#127B99]/30'
-                  }`}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {/* Dynamic Tech Tags rapat di sebelah kiri */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 pt-2 mb-4 sm:mb-6 w-full max-w-fit">
+                {tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className={`text-xs font-mono uppercase tracking-wider px-2.5 py-1 rounded-md font-semibold inline-flex flex-shrink-0 ${isBlue
+                        ? 'bg-violet-950/70 border border-violet-500/50 text-violet-200 shadow-sm shadow-violet-900/40'
+                        : 'bg-[#0e4453]/80 border border-[#127B99]/70 text-[#5ee3ff] shadow-sm shadow-[#127B99]/30'
+                      }`}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Action Row */}
-          <div className="pt-1 flex flex-wrap items-center gap-3">
+          <div className="pt-2 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onProjectClick?.(project);
               }}
-              className={`inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold tracking-wide text-white shadow-xl transition-all hover:scale-105 active:scale-95 ${
-                isBlue
+              className={`inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold tracking-wide text-white shadow-xl transition-all hover:scale-105 active:scale-95 ${isBlue
                   ? 'bg-violet-600 hover:bg-violet-500 shadow-violet-600/40 border border-violet-400/30'
                   : 'bg-[#127B99] hover:bg-[#0e6179] shadow-[#127B99]/45 border border-[#127B99]/40'
-              }`}
+                }`}
             >
               <span>Explore Project Case</span>
               <ArrowUpRight className="w-4 h-4" />
