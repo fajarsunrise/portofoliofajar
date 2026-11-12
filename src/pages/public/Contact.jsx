@@ -11,7 +11,7 @@ import { sendMessage } from "../../api/messages";
 
 // Base URL API Backend Laravel
 import { API_BASE_URL as CONFIG_API_BASE_URL } from "../../api/config";
-const API_BASE_URL = CONFIG_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || "https://api-artikel-portofolio.onrender.com/api";
+const API_BASE_URL = CONFIG_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || "https://api.portofoliofajar.my.id/api";
 
 function Contact() {
   const [formData, setFormData] = useState({

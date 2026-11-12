@@ -1,9 +1,7 @@
 // src/api/config.js
 
-// GANTI URL INI dengan URL asli dari backend Render Anda!
-// Pastikan berakhiran dengan /api
-// export const API_BASE_URL = 'https://api-artikel-portofolio.onrender.com/api';
-export const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// URL Produksi Backend API
+export const API_BASE_URL = 'https://api.portofoliofajar.my.id/api';
 
 /**
  * Helper untuk memastikan URL gambar selalu lengkap dengan origin backend
@@ -14,8 +12,8 @@ export const getFullImageUrl = (url) => {
   const trimmed = url.trim();
   if (!trimmed) return '';
 
-  // Jika URL mengarah ke storage local backend 127.0.0.1:8000, localhost:8000, atau sudah relative /storage/
-  // Ubah/pertahankan menjadi relative path /storage/... agar melalui Vite proxy (bebas kendala CORS di Canvas/WebGL)
+  // Jika URL mengarah ke storage backend atau sudah relative /storage/
+  // Ubah/pertahankan menjadi relative path /storage/... agar melalui proxy (bebas kendala CORS di Canvas/WebGL)
   if (trimmed.includes('/storage/')) {
     const match = trimmed.match(/\/storage\/.+$/);
     if (match) return match[0];
@@ -43,7 +41,7 @@ export const getFullImageUrl = (url) => {
     return trimmed;
   }
 
-  // Bersihkan origin backend dari API_BASE_URL (misal: http://127.0.0.1:8000)
+  // Bersihkan origin backend dari API_BASE_URL (misal: https://api.portofoliofajar.my.id)
   const backendOrigin = API_BASE_URL.replace(/\/api\/?$/, '');
   const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
   return `${backendOrigin}${cleanPath}`;

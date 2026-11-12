@@ -12,7 +12,7 @@ import { scrollToTarget } from "../../utils/scrollManager";
 
 // Base URL API Backend Laravel (Prioritaskan environment variable / config)
 import { API_BASE_URL as CONFIG_API_BASE_URL, getFullImageUrl } from "../../api/config";
-const API_BASE_URL = CONFIG_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || "https://api-artikel-portofolio.onrender.com/api";
+const API_BASE_URL = CONFIG_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || "https://api.portofoliofajar.my.id/api";
 
 // Data default awal agar halaman About langsung merender UI utamanya seketika tanpa jeda kosong / bayangan skeleton
 const DEFAULT_ABOUT = {

@@ -13,7 +13,7 @@ import { scrollToTarget } from "../../utils/scrollManager";
 
 // Base URL API Backend Laravel
 import { API_BASE_URL as CONFIG_API_BASE_URL } from "../../api/config";
-const API_BASE_URL = CONFIG_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || "https://api-artikel-portofolio.onrender.com/api";
+const API_BASE_URL = CONFIG_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || "https://api.portofoliofajar.my.id/api";
 
 function Projects() {
   // Inisialisasi daftar proyek langsung dari cache atau array kosong untuk render instan

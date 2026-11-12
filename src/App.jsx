@@ -15,9 +15,9 @@ import Aurora from "./components/Aurora/Aurora";
 import { scrollToTarget } from "./utils/scrollManager";
 import 'aos/dist/aos.css';
 
-// Base URL API Backend Render
+// Base URL API Backend
 import { API_BASE_URL as CONFIG_API_BASE_URL, getFullImageUrl } from "./api/config";
-const API_BASE_URL = CONFIG_API_BASE_URL || "https://api-artikel-portofolio.onrender.com/api";
+const API_BASE_URL = CONFIG_API_BASE_URL || "https://api.portofoliofajar.my.id/api";
 
 function App() {
   const [selectedProject, setSelectedProject] = useState(null);
